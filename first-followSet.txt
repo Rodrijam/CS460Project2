@@ -1,0 +1,124 @@
+THIS IS A PAIRED DOWN LIST THAT INTERPRETS THE "..." IN THE RULES FOR GENERATING FISTS AND FOLLOW SETS AS MEANING AT LEAST ONE NON-TERMINAL OR TERMINAL MUST BE HERE. THIS IS BECAUSE IF IT IS INTERPRETED AS MEANING ZERO OR MORE A CONFLICT IN THE FIRST SET OF ELSE PART IS CREATED WHERE LPAREN COMES FROM TWO RULES(AS WAS DESCRIBED IN CLASS THIS IS A PROBLEM) THIS HAS LED TO A NUMBER OF GRAMMAR NON-TERMINALS HAVING A FIRST/FOLLOW SET THAT IS A NULL SET.
+
+IN THE PARENTHESIS IS THE RULE LETTER USED FOR GENERATING THAT PARTICULAR FIRST/FOLLOW SET MEMBER AND THE RULE NUMBER IN THE PROJECT GRAMMAR THAT MATCHES THAT RULE (FOR ERROR CHECKING)
+
+
+<program>
+	firsts:
+	LPAREN_T(A 1)
+
+	follows:	
+
+<more defines>
+	firsts:
+	IDENT_T (A 3)
+	DEFINE_T(B 2)	
+
+	follows:
+	
+<define>
+	firsts:
+	DEFINE_T(A 4)
+	
+	follows:
+	LPAREN_T(D 2)
+
+<stmt list>
+	firsts:
+	LPAREN_(B 5)
+
+	follows:
+
+<stmt>
+	firsts:
+	LPAREN_T(A 9)
+	
+	follows:
+	RPAREN_T(D 22)
+	LPAREN_T(E 4)
+	LPAREN_T(E 22 24)
+<literal>
+	firsts:
+	SQUOTE_T(A 12)
+	
+	follows:
+
+<quoted lit>
+	firsts:
+
+	follows:
+
+<more tokens>
+	firsts:
+	!!!!!!!!!!!!!!!!!!!!!revisit
+	follows:
+
+<param list>
+	firsts:
+	IDENT_T(A 16)
+	RPAREN_T(C 17)
+	
+	follows:
+	RPAREN_T(D 4)
+
+<else part>
+	firsts:
+
+	follows:
+
+<stmt pair>
+	firsts:
+	LPAREN_T(A 20)
+
+	follows:
+
+<stmt pair body>
+	firsts:
+	ELSE_T(A 23)
+	LPAREN_t(B 22)
+
+	follows:
+	LPAREN_T(E 22)
+	
+<action>
+	firsts:
+	
+	-------------BELOW MEMBERS USE RULE A
+	IF_T		24
+	COND_T		25
+	LISTOP1_T	26
+	LISTOP2_T	27
+	AND_T		28
+	OR_T		29
+	NOT_T		30
+	NUMBERP_T	31
+	LISTP_T		32
+	ZEROP_T		33
+	NULLP_T		34
+	STRINGP_T	35
+	PLUS_T		36
+	MINUS_T		37
+	DIV_T		38
+	MULT_T		39
+	MODULO_T	40
+	ROUND_T		41
+	EQUALTO_T	42
+	GT_T		43
+	LT_T		44
+	GTE_T		45
+	LTE_T		46
+	IDENT_T		47
+	DISPLAY_T	48
+	-------------END OF RULE A BLOCK USAGE
+	follows:
+	LPAREN_T(E 25)
+	LPAREN_T(E 26 27 30)
+	RPAREN_T(E 26 27 30)
+
+<any other token>
+	firsts:
+	LPAREN_T(A 50)
+	SQUOTE_T(A 79)
+
+	follows:
+
