@@ -15,6 +15,7 @@ IN THE PARENTHESIS IS THE RULE LETTER USED FOR GENERATING THAT PARTICULAR FIRST/
 	DEFINE_T(B 2)	
 
 	follows:
+	+EOF_T (1,2)
 	
 <define>
 	firsts:
@@ -22,17 +23,27 @@ IN THE PARENTHESIS IS THE RULE LETTER USED FOR GENERATING THAT PARTICULAR FIRST/
 	
 	follows:
 	LPAREN_T(D 2)
+	+ LPAREN_T(1)
 
 <stmt list>
 	firsts:
-	LPAREN_(B 5)
-
+	LPAREN_T(B 5)
+	+IDENT_T(5)
+	+NUMLIT_T(5)
+	+STRLIT_T(5)
+	+SQUOTE_T(5)
+	+RPAREN_T(6)
+	
 	follows:
 
 <stmt>
 	firsts:
 	LPAREN_T(A 9)
-	
+	+IDENT_T(8)
+	+NUMLIT_T(7)
+	+STRLIT_T(7)
+	+SQUOTE_T(7)
+
 	follows:
 	RPAREN_T(D 22)
 	LPAREN_T(E 4)
@@ -40,17 +51,21 @@ IN THE PARENTHESIS IS THE RULE LETTER USED FOR GENERATING THAT PARTICULAR FIRST/
 <literal>
 	firsts:
 	SQUOTE_T(A 12)
+	NUMLIT_T(10)
+	STRLIT_T(11)
 	
 	follows:
 
 <quoted lit>
 	firsts:
-
+	+"All firsts from <any_other_token> (13)"
+	
 	follows:
 
 <more tokens>
 	firsts:
-	!!!!!!!!!!!!!!!!!!!!!revisit
+	+"All firsts from <any_other_token> (14)"
+	
 	follows:
 
 <param list>
@@ -63,19 +78,30 @@ IN THE PARENTHESIS IS THE RULE LETTER USED FOR GENERATING THAT PARTICULAR FIRST/
 
 <else part>
 	firsts:
+	+IDENT_T(18)
+	+LPAREN_T(18)
+	+NUMLIT_T(18)
+	+STRLIT_T(18)
+	+SQUOTE_T(18)
+	+RPAREN_T(19)
 
 	follows:
 
 <stmt pair>
 	firsts:
 	LPAREN_T(A 20)
-
+	+RPAREN_T(19)
+	
 	follows:
 
 <stmt pair body>
 	firsts:
 	ELSE_T(A 23)
 	LPAREN_t(B 22)
+	+IDENT_T(22)
+	+NUMLIT_T(22)
+	+STRLIT_T(22)
+	+SQUOTE_T(22)
 
 	follows:
 	LPAREN_T(E 22)
@@ -109,6 +135,7 @@ IN THE PARENTHESIS IS THE RULE LETTER USED FOR GENERATING THAT PARTICULAR FIRST/
 	LTE_T		46
 	IDENT_T		47
 	DISPLAY_T	48
+	+NEWLINE_T	49
 	-------------END OF RULE A BLOCK USAGE
 	follows:
 	LPAREN_T(E 25)
@@ -119,6 +146,7 @@ IN THE PARENTHESIS IS THE RULE LETTER USED FOR GENERATING THAT PARTICULAR FIRST/
 	firsts:
 	LPAREN_T(A 50)
 	SQUOTE_T(A 79)
+	+ Rules 50-81
 
 	follows:
 
