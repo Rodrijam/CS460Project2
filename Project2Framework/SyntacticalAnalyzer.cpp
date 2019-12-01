@@ -39,10 +39,10 @@ int SyntacticalAnalyzer::program ()
 	//Rule 1
 	int errors = 0;
 	if (token ==  "LPAREN_T")
-		token = lex->GetToken();
-	else
-		errors++;						
-	errors += define();
+		token = lex->GetToken(); // yo Jacob here (don't worry only comments) in my notes I have that we should
+	else				 // get the first token in the constructor since rule 1 hasn't been used until we
+		errors++;		//  find a LPAREN_T, also this looks great for if the file is good, but i'm		
+	errors += define();		// not seeing how it will continue if it is not.
 	if (token ==  "LPAREN_T")
 		token = lex->GetToken();
 	else
