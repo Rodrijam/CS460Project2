@@ -63,13 +63,26 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
 }
 
 void SyntacticalAnalyzer::write_to_lst(const string & msg){
+	if(lst.is_open()){
+		lst << msg;
+	} else{
+		report_error("Error Writing to .lst: " + msg);}
 
 }
 
 void SyntacticalAnalyzer::write_to_p2(const string & msg) {
+	if(p2.is_open()){
+		p2 << msg;
+	} else{
+		report_error("Error Writing to .p2: " + msg);}
 
 }
 void SyntacticalAnalyzer::report_error(const string & msg){
+	if(dbg.is_open()){
+		dbg << msg;
+	} else{
+		cout << "Error Writing to debug: " + msg;
+	}
 
 }
 
