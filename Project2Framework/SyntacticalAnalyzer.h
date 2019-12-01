@@ -21,8 +21,13 @@ class SyntacticalAnalyzer
 	SyntacticalAnalyzer (char * filename);
 	~SyntacticalAnalyzer ();
     private:
+	
 	ofstream lst;
 	ofstream p2;
+
+	void write_to_lst(const string & msg);
+	void write_to_p2(const string & msg) ;
+
 	LexicalAnalyzer * lex;
 	token_type token;
 	int program ();
