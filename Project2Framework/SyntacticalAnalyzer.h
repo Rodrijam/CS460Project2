@@ -21,7 +21,7 @@ class SyntacticalAnalyzer
 	SyntacticalAnalyzer (char * filename);
 	~SyntacticalAnalyzer ();
     private:
-	
+
 	ofstream lst;
 	ofstream p2;
 
