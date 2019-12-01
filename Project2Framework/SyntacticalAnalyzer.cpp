@@ -17,7 +17,19 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
 {
 	lex = new LexicalAnalyzer (filename);
 	token_type t;
-	int totalErrors = program ();
+	t = lex->GetToken();
+
+	bool found = false;
+	while(t!= EOF_T)
+	{
+		if(t == LPAREN_T)
+		{
+			found = true;
+			int totalErrors = program();
+		}
+		t = lex->GetToken();
+	}
+
 }
 
 SyntacticalAnalyzer::~SyntacticalAnalyzer ()
