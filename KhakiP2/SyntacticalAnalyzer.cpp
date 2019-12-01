@@ -28,7 +28,7 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
 	string LSTfilename = DBGfilename;
 	string P2filename  = DBGfilename;
 	DBGfilename += "2.dbg";
-	LSTfilename += "2.lst";
+	LSTfilename += ".lst";
 	P2filename  += ".P2";
 
 	dbg.open(DBGfilename,std::ofstream::out); //first open .dbg file
@@ -55,7 +55,8 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
 
 	lex = new LexicalAnalyzer (filename);
 	token_type t;
-	t = lex->GetToken();
+	token = lex->GetToken();
+	int totalErrors = program ();
 	
 	//Unsure about this, will discuss
 	bool found = false;
@@ -106,13 +107,13 @@ int SyntacticalAnalyzer::program ()
 {
 	token = lex->GetToken();
 	//Rule 1
-	p2 << "Using Rule 1" <<  endl;
+	write_to_p2("Using Rule 1\n");
 	int errors = 0;
 	if (lex->GetTokenName(token) ==  "LPAREN_T")
-		token = lex->GetToken(); // yo Jacob here (don't worry only comments) in my notes I have that we should
-	else				 // get the first token in the constructor since rule 1 hasn't been used until we
-		errors++;		//  find a LPAREN_T, also this looks great for if the file is good, but i'm		
-	errors += define();		// not seeing how it will continue if it is not.
+		token = lex->GetToken(); 	// yo Jacob here (don't worry only comments) in my notes I have that we should
+	else						 	// get the first token in the constructor since rule 1 hasn't been used until we
+		errors++;					//  find a LPAREN_T, also this looks great for if the file is good, but i'm		
+	errors += define();				// not seeing how it will continue if it is not.
 	if (lex->GetTokenName(token) ==  "LPAREN_T")
 		token = lex->GetToken();
 	else
@@ -130,7 +131,7 @@ int SyntacticalAnalyzer::more_defines ()
 	int errors = 0;
 	if (lex->GetTokenName(token) ==  "IDENT_T") //Rule 3
 	{
-		cout << "Using Rule 3" << endl;
+		write_to_p2("Using Rule 3\n");
 		token = lex->GetToken();
 		errors += stmt_list();
 		if (lex->GetTokenName(token) ==  "RPAREN_T")
@@ -140,7 +141,7 @@ int SyntacticalAnalyzer::more_defines ()
 	}
 	else					// Rule 2
 	{
-		cout << "Using Rule 2" << endl;
+		write_to_p2("Using Rule 2\n");
 		errors += define();
 		if (lex->GetTokenName(token) ==  "LPAREN_T")
 			token = lex->GetToken();
@@ -154,7 +155,7 @@ int SyntacticalAnalyzer::more_defines ()
 int SyntacticalAnalyzer::define ()
 {
 	//Rule 4
-	cout << "Using Rule 4" << endl;
+	write_to_p2("Using Rule 4\n");
 	int errors = 0;
 	if (lex->GetTokenName(token) ==  "DEFINE_T")
 		token = lex->GetToken();
@@ -187,12 +188,12 @@ int SyntacticalAnalyzer::stmt_list ()
 	int errors = 0;
 	if (lex->GetTokenName(token) ==  "RPAREN_T") 		// Rule 6
 	{
-		cout << "Using Rule 6" << endl;
+		write_to_p2("Using Rule 6\n");
 		return errors;
 	}
 	else							// Rule 5
 	{
-		cout << "Using Rule 5" << endl;
+		write_to_p2("Using Rule 5\n");
 		errors += stmt();
 		errors += stmt_list();
 	}
@@ -204,13 +205,13 @@ int SyntacticalAnalyzer::stmt ()
 	int errors = 0;
 	if (lex->GetTokenName(token) ==  "IDENT_T")		// Rule 8
 	{
-		cout << "Using Rule 8" << endl;
+		write_to_p2("Using Rule 8\n");
 		token = lex->GetToken();
 		return errors;
 	}
 	else if (lex->GetTokenName(token) == "LPAREN_T")	// Rule 9
 	{
-		cout << "Using Rule 9" << endl;
+		write_to_p2("Using Rule 9\n");
 		token = lex->GetToken();
 		errors += action();
 		if (lex->GetTokenName(token) ==  "RPAREN_T")
@@ -220,8 +221,17 @@ int SyntacticalAnalyzer::stmt ()
 	}
 	else							// Rule 7
 	{
-		cout << "Using Rule 7" << endl;
-		errors += literal();
+			
+		//errors += stmt();
+		
+		int nerrors = literal();
+		if (nerrors == 0)
+			write_to_p2("Using Rule 7\n");
+		else
+		{
+			errors = errors + nerrors + stmt();
+		}
+		
 	}
 
 	return errors;
@@ -230,32 +240,36 @@ int SyntacticalAnalyzer::stmt ()
 int SyntacticalAnalyzer::literal ()
 {
 	int errors = 0;
-	cout << "This: " << lex->GetTokenName(token) << endl;
 	if (lex->GetTokenName(token) ==  "NUMLIT_T")		// Rule 10
 	{
-		cout << "Using Rule 10" << endl;
+		write_to_p2("Using Rule 10\n");
 		token = lex->GetToken();
 	}
 	else if (lex->GetTokenName(token) ==  "STRLIT_T")	// Rule 11
 	{
-		cout << "Using Rule 11" << endl;
+		write_to_p2("Using Rule 11\n");
 		token = lex->GetToken();
 	}
 	else if (lex->GetTokenName(token) ==  "SQUOTE_T")	// Rule 12
 	{
-		cout << "Using Rule 12" << endl;
+		write_to_p2("Using Rule 12\n");
 		token = lex->GetToken();
 		errors += quoted_lit();
 	}
 	else
+	{
+		string mesg = "Error with: " + lex->GetTokenName(token) + string("\n");
+		token = lex->GetToken();
+		write_to_lst(mesg);
 		errors++;
+	}
 	return errors;
 }
 
 int SyntacticalAnalyzer::quoted_lit ()
 {
 	int errors = 0;
-	cout << "Using Rule #" << endl;	//ADD NUMBER HERE
+	write_to_p2("Using Rule 13\n");
 	errors += any_other_token();
 	return errors;
 }
@@ -265,12 +279,12 @@ int SyntacticalAnalyzer::more_tokens ()
 	int errors = 0;
 	if (lex->GetTokenName(token) ==  "RPAREN_T") 		// Rule 15
 	{
-		cout << "Using Rule 15" << endl;
+		write_to_p2("Using Rule 15\n");
 		return errors;
 	}
 	else							// Rule 14
 	{
-		cout << "Using Rule 14" << endl;
+		write_to_p2("Using Rule 14\n");
 		errors += any_other_token();
 		errors += more_tokens();
 	}
@@ -282,12 +296,12 @@ int SyntacticalAnalyzer::param_list ()
 	int errors = 0;
 	if (lex->GetTokenName(token) ==  "RPAREN_T") 		// Rule 17
 	{
-		cout << "Using Rule 17" << endl;
+		write_to_p2("Using Rule 17\n");
 		return errors;
 	}
 	else if (lex->GetTokenName(token) == "IDENT_T")	// Rule 16
 	{
-		cout << "Using Rule 16" << endl;
+		write_to_p2("Using Rule 16\n");
 		token = lex->GetToken();
 		errors += param_list();
 	}
@@ -301,12 +315,12 @@ int SyntacticalAnalyzer::else_part ()
 	int errors = 0;
 	if (lex->GetTokenName(token) ==  "RPAREN_T") 		// Rule 19
 	{
-		cout << "Using Rule 19" << endl;
+		write_to_p2("Using Rule 19\n");
 		return errors;
 	}
 	else 							// Rule 18
 	{
-		cout << "Using Rule 18" << endl;
+		write_to_p2("Using Rule 18\n");
 		errors += stmt();
 	}
 	return errors;
@@ -317,12 +331,12 @@ int SyntacticalAnalyzer::stmt_pair ()
 	int errors = 0;
 	if (lex->GetTokenName(token) ==  "RPAREN_T") 		// Rule 21
 	{
-		cout << "Using Rule 21" << endl;
+		write_to_p2("Using Rule 21\n");
 		return errors;
 	}
 	else if (lex->GetTokenName(token) == "LPAREN_T")	// Rule 20
 	{
-		cout << "Using Rule 20" << endl;
+		write_to_p2("Using Rule 20\n");
 		token = lex->GetToken();
 		errors += stmt_pair_body();
 	}
@@ -336,16 +350,17 @@ int SyntacticalAnalyzer::stmt_pair_body ()
 	int errors = 0;
 	if (lex->GetTokenName(token) == "ELSE_T")			// Rule 23
 	{
-		cout << "Using Rule 23" << endl;
+		token = lex->GetToken();
+		write_to_p2("Using Rule 23\n");
 		errors += stmt();
 		if (lex->GetTokenName(token) == "RPAREN_T")
 			token = lex->GetToken();
 		else
 			errors++;
 	}
-	else							// ADD RULE #
+	else												// RULE 22
 	{
-		cout << "Using Rule #" << endl;
+		write_to_p2("Using Rule 22\n");
 		errors += stmt();
 		errors += stmt();
 		if (lex->GetTokenName(token) == "RPAREN_T")
@@ -359,40 +374,80 @@ int SyntacticalAnalyzer::stmt_pair_body ()
 
 int SyntacticalAnalyzer::action ()
 {
-	//  ADD RULE NUMBERS
 	int errors = 0;
-	/*
-	if (lex->GetTokenName(token) == "NEWLINE_T")	// RULE 49
+	string currToken = lex->GetTokenName(token);
+	
+	if (currToken == "NEWLINE_T")	// RULE 49
 	{
-		cout << "Using Rule 49" << endl;
+		token = lex->GetToken();
+		write_to_p2("Using Rule 49\n");
+		return errors;
+	}	
+	else if (currToken == "COND_T") 	// RULE 25
+	{
+		token = lex->GetToken();
+		write_to_p2("Using Rule 25\n");
+		if (lex->GetTokenName(token) == "LPAREN_T")
+		{
+			token = lex->GetToken();;
+			errors += stmt_pair_body();
+		}
+		else
+			errors++;
 		return errors;
 	}
 	
-	// if the token is in the stmtOnlyList, run
-	
-		errors += stmt();
-		if the token is in the doublestmtlist, run
-			errors += stmt();
-		
-	
+	static map<string, int> stmtStMap = 	{
+											{"IF_T", 24}, {"LISTOP1_T", 26}, {"LISTOP2_T", 27}, {"NOT_T",30},
+											{"NUMBERP_T",31}, {"LISTP_T",32}, {"ZEROP_T",33}, {"NULLP_T",34}, {"STRINGP_T",35},
+											{"MINUS_T",37}, {"DIV_T",38}, {"MODULO_T",40}, {"ROUND_T",41}, {"DISPLAY_T",48} 
+											};
 
-	static map<string, int> otherTokenMap = {
-						{"IDENT_T", 51}, {"NUMLIT_T", 52}, {"STRLIT_T", 53}, {"LISTOP_T", 54}, {"IF_T", 55},
-						{"DISPLAY_T", 56}, {"NEWLINE_T", 57}, {"LISTOP1_T", 58}, {"AND_T", 59}, {"OR_T", 60},
-						{"", 61}, {"", 62}, {"", 63}, {"", 64}, {"", 65}, 
-						{"", 66}, {"", 67}, {"", 68}, {"", 69}, {"", 70}, 
-						{"", 71}, {"", 72}, {"", 73}, {"", 74}, {"", 75}, 
-						{"", 76}, {"", 77}, {"", 78}, {"", 80}, {"", 81},  
+	static map<string, int> stmtLSTMap = {
+						{"AND_T", 28}, {"OR_T", 29}, {"PLUS_T", 36}, {"MULT_T", 39}, {"EQUALTO_T", 42},
+						{"GT_T", 43}, {"LT_T", 44}, {"GTE_T", 45}, {"LTE_T", 46}, {"IDENT_T", 47},  
 						};
-	
-	//stmtOlist = {""}
-	
-	
-	*/
-	cout << "Using an Action Rule" << endl;
-
-
-
+											
+	if (stmtStMap.count(currToken) == 1)
+	{
+		string ruleNum = to_string(stmtStMap.at(currToken));
+		token = lex->GetToken();
+		errors += stmt();
+		if (currToken == "LISTOP2_T" || currToken == "MODULO_T" || currToken == "IF_T")
+		{
+			errors += stmt();
+			if (currToken == "IF_T")
+				errors += else_part();
+			string mesg = "Using Rule " + ruleNum + string("\n");
+			write_to_p2(mesg);
+		}
+		else if (currToken == "MINUS_T" || currToken == "DIV_T")
+		{
+			errors += stmt_list();
+			string mesg = "Using Rule " + ruleNum + string("\n");
+			write_to_p2(mesg);			
+		}
+		else
+		{
+			string mesg = "Using Rule " + ruleNum + string("\n");
+			write_to_p2(mesg);		
+		}
+		return errors;
+	}		
+	else if (stmtLSTMap.count(currToken) == 1)
+	{
+		token = lex->GetToken();
+		errors += stmt_list();
+		string mesg = "Using Rule " + to_string(stmtLSTMap.at(currToken)) + string("\n");
+		write_to_p2(mesg);	
+	}	
+	else
+	{
+		errors++;
+		token = lex->GetToken();
+		errors += action();
+		
+	}
 	return errors;
 }
 
@@ -402,7 +457,7 @@ int SyntacticalAnalyzer::any_other_token ()
 	
 	if (lex->GetTokenName(token) == "LPAREN_T")			// RULE 50
 	{
-		cout << "Using Rule 50" << endl;
+		write_to_p2("Using Rule 50\n");
 		token = lex->GetToken();
 		errors += more_tokens();
 		if (lex->GetTokenName(token) == "RPAREN_T")
@@ -412,31 +467,30 @@ int SyntacticalAnalyzer::any_other_token ()
 	}
 	else if (lex->GetTokenName(token) == "SQUOTE_T")		// RULE 79
 	{
-		cout << "Using Rule 79" << endl;
+		write_to_p2("Using Rule 79\n");
 		token = lex->GetToken();
 		errors += any_other_token();
 	}
 	else
 	{
-		/*
+		
 		static map<string, int> otherTokenMap = {
 							{"IDENT_T", 51}, {"NUMLIT_T", 52}, {"STRLIT_T", 53}, {"LISTOP_T", 54}, {"IF_T", 55},
 							{"DISPLAY_T", 56}, {"NEWLINE_T", 57}, {"LISTOP1_T", 58}, {"AND_T", 59}, {"OR_T", 60},
-							{"", 61}, {"", 62}, {"", 63}, {"", 64}, {"", 65}, 
-							{"", 66}, {"", 67}, {"", 68}, {"", 69}, {"", 70}, 
-							{"", 71}, {"", 72}, {"", 73}, {"", 74}, {"", 75}, 
-							{"", 76}, {"", 77}, {"", 78}, {"", 80}, {"", 81},  
+							{"NOT_T", 61}, {"DEFINE_T", 62}, {"NUMBERP_T", 63}, {"LISTP_T", 64}, {"ZEROP_T", 65}, 
+							{"NULLP_T", 66}, {"STRINGP_T", 67}, {"PLUS_T", 68}, {"MINUS_T", 69}, {"DIV_T", 70}, 
+							{"MULT_T", 71}, {"MODULO_T", 72}, {"ROUND_T", 73}, {"EQUALTO_T", 74}, {"GT_T", 75}, 
+							{"LT_T", 76}, {"GTE_T", 77}, {"LTE_T", 78}, {"COND_T", 80}, {"ELSE_T", 81},  
 							};
 			
 		if (otherTokenMap.count(lex->GetTokenName(token)) == 0)
 			errors++;
 		else
 		{
-			// print RULE is otherTokenMap.find(token)
+			string mesg = "Using Rule " + to_string(otherTokenMap.at(lex->GetTokenName(token))) + string("\n");
+			write_to_p2(mesg);
+			token = lex->GetToken();
 		}
-		*/
-		cout << "Using Rule ANY_OTHER_TOKEN" << endl;
-	}
-						
+	}			
 	return errors;
 }
