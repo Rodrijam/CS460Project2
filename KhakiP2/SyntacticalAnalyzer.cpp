@@ -32,31 +32,32 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
 	P2filename  += ".P2";
 
 	dbg.open(DBGfilename,std::ofstream::out); //first open .dbg file
-	if(dbg.is_open()){
+        if (!dbg.is_open())
+        {
+            cout << "Error opening " + string(DBGfilename) + "\n";
+            exit(1);
+        }
 
-		lst.open(LSTfilename,std::ofstream::out); //and on..
-		if(lst.is_open()){
-			write_to_lst("Input file: " + string(filename) + "\n");
-			p2.open(P2filename,std::ofstream::out);
-			if(p2.is_open()){
-				//all files open.
-			} else{
-				report_error("Error Opening " + string(P2filename) + "\n");
-			}
-		} else{
-			report_error("Error opening " + string(LSTfilename) + "\n");
-		}
-	} else{
-		cout << "Error opening " + string(DBGfilename) + "\n";
-	}
+        lst.open(LSTfilename,std::ofstream::out);
+        if(!lst.is_open())
+        {
+            report_error("Error opening " + string(LSTfilename) + "\n");
+            exit(1);
+        }
+        write_to_lst("Input file: " + string(filename) + "\n");
+        p2.open(P2filename,std::ofstream::out);
 
-
+        if (!p2.is_open())
+        {
+            report_error("Error Opening " + string(P2filename) + "\n");
+            exit(1);
+        }
 
 	lex = new LexicalAnalyzer (filename);
 	token_type t;
 	t = lex->GetToken();
 	
-	/*	Unsure about this, will discuss
+	//Unsure about this, will discuss
 	bool found = false;
 	while(t!= EOF_T || !found)
 	{
@@ -67,32 +68,33 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
 		}
 		t = lex->GetToken();
 	}
-	*/
 
 }
 
 void SyntacticalAnalyzer::write_to_lst(const string & msg){
-	if(lst.is_open()){
-		lst << msg;
-	} else{
-		report_error("Error Writing to .lst: " + msg);}
-
+    if(!lst.is_open())
+    {
+        report_error("Error writing to .lst: " + msg);
+        return;
+    }
+    lst << msg;
 }
 
 void SyntacticalAnalyzer::write_to_p2(const string & msg){
-	if(p2.is_open()){
-		p2 << msg;
-	} else{
-		report_error("Error Writing to .p2: " + msg);}
-
+    if(!p2.is_open())
+    {
+        report_error("Error writing to .p2: " + msg);
+        return;
+    }
+    p2 << msg;
 }
 void SyntacticalAnalyzer::report_error(const string & msg){
-	if(dbg.is_open()){
-		dbg << msg;
-	} else{
-		cout << "Error Writing to debug: " + msg;
-	}
-
+    if (!dbg.is_open())
+    {
+        cout << "Error Writing to debug: " + msg;
+        return;
+    }
+    dbg << msg;
 }
 
 SyntacticalAnalyzer::~SyntacticalAnalyzer ()
