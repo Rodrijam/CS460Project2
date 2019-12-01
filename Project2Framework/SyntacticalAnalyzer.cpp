@@ -50,7 +50,7 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
 	t = lex->GetToken();
 
 	bool found = false;
-	while(t!= EOF_T)
+	while(t!= EOF_T || !found)
 	{
 		if(t == LPAREN_T)
 		{
