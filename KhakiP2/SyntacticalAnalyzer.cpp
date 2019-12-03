@@ -57,8 +57,8 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
 	token = lex->GetToken();
 	int totalErrors = program ();
 	
-	/*	Unsure about this, will discuss
-	bool found = false;
+	/*	Unsure about this, since there are isn't a function to put back tokens, creating a vector to hold tokens already
+	bool found = false;	//found seems like a bad approach outside the scope of this class. 
 	while(t!= EOF_T || !found)
 	{
 		if(t == LPAREN_T)
