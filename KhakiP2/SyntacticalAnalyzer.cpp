@@ -1,9 +1,9 @@
 /*******************************************************************************
-* File name:                                                                   *
+* File name: SyntacticalAnalyzer.cpp                                           *
 * Project: CS 460 Project 2 Fall 2019                                          *
-* Author(s):                                                                   *
-* Date:                                                                        *
-* Description: This file contains                                              *
+* Author(s):James R Jacob B Nico G  					       *
+* Date: Fall 19                                                                *
+* Description: This file contains a class to analyze a scheme program's syntax *
 *******************************************************************************/
 
 #include <iostream>
